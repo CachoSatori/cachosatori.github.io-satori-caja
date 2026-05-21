@@ -108,7 +108,9 @@ Ambos repos apuntan al mismo Apps Script desplegado — mismo Google Sheet, mism
 
 ## Backend (Google Apps Script)
 
-El archivo `satori_apps_script_v3.js` contiene el script completo (ventas + caja). Reemplaza el código existente en el proyecto Apps Script del restaurante.
+El archivo de referencia actual es **`satori_apps_script_v4.1.js`** (ubicado en la carpeta `SATORI PROPINAS`). Es el script unificado que maneja ventas, propinas, caja y reportes por correo. Reemplaza el código existente en el proyecto Apps Script del restaurante.
+
+El archivo `Código.js` en esta carpeta es una versión anterior de referencia local.
 
 **Hojas nuevas que crea automáticamente:**
 - `turnos` — cierres de turno
@@ -138,10 +140,10 @@ El archivo `satori_apps_script_v3.js` contiene el script completo (ventas + caja
 
 1. Ir a [script.google.com](https://script.google.com) → abrir el proyecto Satori
 2. Seleccionar todo el código → `Ctrl+A` → borrar
-3. Pegar el contenido de `satori_apps_script_v3.js`
+3. Pegar el contenido de `satori_apps_script_v4.1.js` (carpeta SATORI PROPINAS)
 4. Guardar → `Ctrl+S`
 5. **Deploy → Manage deployments → editar → New version → Deploy**
-6. La misma URL sigue funcionando — no hay que cambiar nada en el dashboard de ventas
+6. La misma URL sigue funcionando — no hay que cambiar nada en las demás apps
 
 ---
 
