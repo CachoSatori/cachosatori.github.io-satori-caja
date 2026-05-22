@@ -2923,12 +2923,12 @@ function buildResumenBody() {
   }
 
   // ── Saldo actual Caja Fuerte (todos los movimientos, no solo el período) ──
-  let cfCRC = CF_SALDO_INICIAL, cfUSD = CF_SALDO_INICIAL_USD;
+  // Todo el efectivo de ventas entra a CF; todos los egresos en efectivo salen de CF
+  let cfCRC = 0, cfUSD = 0;
   MOVIMIENTOS.forEach(m => {
-    const tipo = m.tipo || '', cat = m.categoria || '', caja = m.caja_origen || '';
+    const tipo = m.tipo || '', cat = m.categoria || '', caja = m.caja_origen || '', metodo = m.metodo || '';
     if (tipo === 'Ingreso' && caja === 'Caja Fuerte')          { cfCRC += m.monto_crc||0; cfUSD += m.monto_usd||0; }
-    else if (tipo === 'Egreso' && caja === 'Caja Fuerte')      { cfCRC -= m.monto_crc||0; cfUSD -= m.monto_usd||0; }
-    else if (tipo === 'Egreso' && cat === 'Egreso - Mercadería' && m.metodo === 'Efectivo' && m.estado === 'Pagado') { cfCRC -= m.monto_crc||0; cfUSD -= m.monto_usd||0; }
+    else if (tipo === 'Egreso' && m.estado !== 'Pendiente' && (caja === 'Caja Fuerte' || metodo === 'Efectivo')) { cfCRC -= m.monto_crc||0; cfUSD -= m.monto_usd||0; }
     else if (cat === 'Ajuste')                                 { cfCRC += m.monto_crc||0; }
   });
   const cfColor = cfCRC < 0 ? 'var(--red)' : 'var(--gold)';
