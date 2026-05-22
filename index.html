@@ -2309,19 +2309,15 @@ function buildSaldos() {
     const caja = m.caja_origen || '';
     const tipo = m.tipo || '';
 
-    // Ventas efectivo del cierre de turno (manager) → entra a CF
+    // Ventas + ingresos efectivo → entran a CF
     if (tipo === 'Ingreso' && caja === 'Caja Fuerte') {
       cfCRC += m.monto_crc||0;
       cfUSD += m.monto_usd||0;
     }
-    // Egresos EFECTIVOS de Caja Fuerte (propinas, otros del cierre)
-    else if (tipo === 'Egreso' && caja === 'Caja Fuerte') {
-      cfCRC -= m.monto_crc||0;
-      cfUSD -= m.monto_usd||0;
-    }
-    // Pagos a proveedores EN EFECTIVO desde Caja Diaria → salen de CF
-    else if (tipo === 'Egreso' && cat === 'Egreso - Mercadería' &&
-             metodo === 'Efectivo' && m.estado === 'Pagado') {
+    // Todos los egresos en efectivo salen de CF (proveedores, personal, socios, operativos)
+    // También egresos directos de Caja Fuerte (cualquier método, excepto pendientes)
+    else if (tipo === 'Egreso' && m.estado !== 'Pendiente' &&
+             (caja === 'Caja Fuerte' || metodo === 'Efectivo')) {
       cfCRC -= m.monto_crc||0;
       cfUSD -= m.monto_usd||0;
     }
@@ -2329,7 +2325,7 @@ function buildSaldos() {
     else if (cat === 'Ajuste') {
       cfCRC += m.monto_crc||0; // puede ser negativo
     }
-    // Traspasos internos (CF→Diaria, Diaria→CF) NO afectan el total
+    // Traspasos internos y transferencias NO afectan el saldo de CF
   });
 
   // ── PENDIENTES DE TRANSFERENCIA ───────────────────────────
