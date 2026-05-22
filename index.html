@@ -2526,6 +2526,10 @@ function renderPendientes(el) {
     if (!porProv[key].prov) porProv[key].prov = PROVEEDORES.find(p=>p.id===m.proveedor_id);
   });
 
+  // Guardar datos globalmente para que descargarImagenProveedor los pueda leer
+  // (evita pasar JSON con comillas dobles directamente en atributos HTML onclick)
+  window._pendientesData = porProv;
+
   const totalPendCRC = pendientes.reduce((s,m)=>s+(m.monto_crc||0),0);
   const totalPendUSD = pendientes.reduce((s,m)=>s+(m.monto_usd||0),0);
 
@@ -2630,7 +2634,7 @@ function renderPendientes(el) {
             <button class="btn btn-primary btn-sm" onclick="marcarTodosPagado('${nombre}')">
               ✓ Marcar todos pagados
             </button>
-            <button class="btn btn-ghost btn-sm" onclick="descargarImagenProveedor('${nombre}', ${JSON.stringify(data.movs).replace(/'/g,"\'")} )">
+            <button class="btn btn-ghost btn-sm" onclick="descargarImagenProveedor('${nombre.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">
               📷 Descargar imagen para proveedor
             </button>
           </div>
@@ -2707,7 +2711,14 @@ async function marcarTodosPagado(nombreProv) {
   }
 }
 
-function descargarImagenProveedor(nombre, movs) {
+function descargarImagenProveedor(nombre) {
+  // Obtener los movimientos desde el cache global (evita problemas con JSON en atributos HTML)
+  const data = window._pendientesData && window._pendientesData[nombre];
+  if (!data || !data.movs || !data.movs.length) {
+    showToast('No hay movimientos para ' + nombre, 'error');
+    return;
+  }
+  const movs = data.movs;
   // Crear canvas con el detalle para el proveedor
   const canvas = document.createElement('canvas');
   const W = 600, ROW_H = 38, HEADER = 180, FOOTER = 80;
